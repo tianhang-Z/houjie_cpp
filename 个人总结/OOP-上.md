@@ -2,7 +2,9 @@
 
 在类的关系上，也分为composition、delegation、inheritance三种，其中delegation通过指针指向另一个类。
 
-在inheritance方面，需要关心虚函数和多态
+在inheritance方面，需要关心虚函数和多态。
+
+类的三种关系进行组合，可以有多种设计模式。
 
 ####  类的两种设计
 
