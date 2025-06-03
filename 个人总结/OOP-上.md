@@ -63,15 +63,15 @@
 
 `operator<<`重载
 
-![image-20250526174738993](./image/侯捷-OOP总结_image/image-20250526174738993.png)
+![image-20250603193421968](./image/OOP-上_image/image-20250603193421968.png)
 
 `operator+=`返回引用，而`operator+`返回value
 
 #### 友元
 
-![image-20250526174509049](./image/侯捷-OOP总结_image/image-20250526174509049.png)
+![image-20250603193440584](./image/OOP-上_image/image-20250603193440584.png)
 
-![image-20250526171025515](./image/侯捷-OOP总结_image/image-20250526171025515.png)
+![image-20250603193450850](./image/OOP-上_image/image-20250603193450850.png)
 
  即c2可以访问c1的私有成员变量
 
@@ -87,19 +87,19 @@ do assignment plus
 
 注意`operator+`return by value，返回一个临时对象
 
-![image-20250526190545514](./image/侯捷-OOP总结_image/image-20250526190545514.png)
+![image-20250603193500412](./image/OOP-上_image/image-20250603193500412.png)
 
 
 
 ***
 
-![image-20250526190530732](./image/侯捷-OOP总结_image/image-20250526190530732.png)
+![image-20250603193510936](./image/OOP-上_image/image-20250603193510936.png)
 
 ##### operator-
 
 负号和减运算符的区别在于参数数量不同，负号是一元运算符
 
-![image-20250526203506208](./image/侯捷-OOP总结_image/image-20250526203506208.png)
+![image-20250603193530330](./image/OOP-上_image/image-20250603193530330.png)
 
 ##### output运算符
 
@@ -107,13 +107,13 @@ do assignment plus
 
 ostream不可以加const，因为要修改os
 
-![image-20250526203933110](./image/侯捷-OOP总结_image/image-20250526203933110.png)
+![image-20250603193544371](./image/OOP-上_image/image-20250603193544371.png)
 
  #### 带指针的类：  拷贝构造、拷贝赋值、析构
 
   申请内存、深拷贝、释放内存
 
-![image-20250527151747864](./image/侯捷-OOP总结_image/image-20250527151747864.png)
+![image-20250603193606099](./image/OOP-上_image/image-20250603193606099.png)
 
 一定要检测自我赋值，不然会发生错误，因为先`delete[] m_data`，再访问m_data会错误
 
@@ -125,24 +125,24 @@ new:
 * void*==转型==， 
 * pc指针调用构造函数   (==在string实现中，这一步才会给字符串分配内存==)
 
-![image-20250527154408718](./image/侯捷-OOP总结_image/image-20250527154408718.png)
+![image-20250603193619524](./image/OOP-上_image/image-20250603193619524.png)
 
-![image-20250527154621126](./image/侯捷-OOP总结_image/image-20250527154621126.png)
+![image-20250603193631419](./image/OOP-上_image/image-20250603193631419.png)
 
 delete : 
 
 * 析构函数（complex的析构函数不做事情，string的析构函数会释放字符串占用的内存）
 * 释放内存（收回类的实例所占的内存）
 
-![image-20250527154524043](./image/侯捷-OOP总结_image/image-20250527154524043.png)
+![image-20250603193642040](./image/OOP-上_image/image-20250603193642040.png)
 
 对string的指针进行delete，先析构函数释放字符串所占内存，之后释放对象所占的内存。
 
-![image-20250527155032040](./image/侯捷-OOP总结_image/image-20250527155032040.png)
+![image-20250603193650845](./image/OOP-上_image/image-20250603193650845.png)
 
 #### 为什么cout可以接受各种类型
 
-![image-20250527172751741](./image/侯捷-OOP总结_image/image-20250527172751741.png)
+![image-20250603193704998](./image/OOP-上_image/image-20250603193704998.png)
 
 因为cout对`operator<<`进行了多种重载，使得<<操作符可以接受多种参数
 
@@ -152,15 +152,15 @@ delete :
 
 #### composition , 组合 has-a
 
-直接包含component，寿命是相同的，内存上是包含的，构造和析构时是同步的，寿命相同。
+**直接包含component，寿命是相同的，内存上是包含的，构造和析构时是同步的，寿命相同。**
 
 component修改时，container也需要重新编译。
 
-![image-20250527174127687](./image/侯捷-OOP总结_image/image-20250527174127687.png)
+![image-20250603193717089](./image/OOP-上_image/image-20250603193717089.png)
 
 内存上是包含关系
 
-![image-20250527174627581](./image/侯捷-OOP总结_image/image-20250527174627581.png)
+![image-20250603193725210](./image/OOP-上_image/image-20250603193725210.png)
 
 构造由内而外，先执行component的构造函数，一层层包装。
 
@@ -168,17 +168,17 @@ component修改时，container也需要重新编译。
 
 下图中红色部分是编译器帮我们处理的，实际自己写代码时，并没有手动编写，而编译器会选择默认版本。
 
-![image-20250527174924156](./image/侯捷-OOP总结_image/image-20250527174924156.png)
+![image-20250603193735328](./image/OOP-上_image/image-20250603193735328.png)
 
 #### Delegation 委托 (composition by reference)
 
-使用指针指向component，并非真的拥有，内存上没有包含component实例，其寿命也不一致。
+使用**指针指向component，并非真的拥有，内存上没有包含component实例，其寿命也不一致。**
 
 pImpl，pointer to impletion，指针指向实现。也叫Handle/Body
 
 真正的实现可以被修改，并且不影响左边。 因此这种手法被称为编译防火墙，右边修改时，左边不需要重新编译。
 
-![image-20250527175730571](./image/侯捷-OOP总结_image/image-20250527175730571.png)
+![image-20250603193820930](./image/OOP-上_image/image-20250603193820930.png)
 
 ####  Inheritance 继承 is-a（是一种）
 
@@ -188,33 +188,35 @@ pImpl，pointer to impletion，指针指向实现。也叫Handle/Body
 
 构造也是由内而外，析构由外而内。并且编译器自动帮我们调用父类的构造和析构函数。
 
-![image-20250527181454316](./image/侯捷-OOP总结_image/image-20250527181454316.png)
+![image-20250603193917872](./image/OOP-上_image/image-20250603193917872.png)
 
 ### 继承、多态和虚函数
 
 **一个良好的编程习惯是，父类的析构函数编写为virtual函数**
 
-![image-20250527181521114](./image/侯捷-OOP总结_image/image-20250527181521114.png)
+![image-20250603193931558](./image/OOP-上_image/image-20250603193931558.png)
 
-![image-20250527182422988](./image/侯捷-OOP总结_image/image-20250527182422988.png)
+![image-20250603193941473](./image/OOP-上_image/image-20250603193941473.png)
 
- ##### 设计模式template method
+ ##### 设计模式 模板方法 template method
 
 定义一个操作的算法的骨架，而将一些步骤延迟到子类中。使得子类不改变算法的结构即可重新定义算法的特定步骤。
 
 这个设计模式中，父类的函数中调用虚函数，定义好逻辑。然后子类去实现自己的虚函数，并执行上述逻辑的子类版本。
 
+**当我们要完成层次一致的一个过程或一系列步骤时，个别步骤在实现上可能不同，这时候可以考虑该模式。**
+
 成员函数的第一个参数是this，在下面这个例子中，调用`OnFileOpen`时传入`CMyDoc`指针，接着传给`Serialize()`，接着通过this指针调用`CMyDoc::Serialize()`
 
-![image-20250527204840478](./image/侯捷-OOP总结_image/image-20250527204840478.png)
+![image-20250603194115255](./image/OOP-上_image/image-20250603194115255.png)
 
-![image-20250527205252593](./image/侯捷-OOP总结_image/image-20250527205252593.png)
+![image-20250603194255902](./image/OOP-上_image/image-20250603194255902.png)
 
-##### 继承+组合时  构造函数调用顺序
+### 继承+组合时  构造函数调用顺序
 
 根据内存的布局，构造由内而外，析构由外而内
 
-![image-20250527205529110](./image/侯捷-OOP总结_image/image-20250527205529110.png)
+![image-20250603194317773](./image/OOP-上_image/image-20250603194317773.png)
 
 ### 继承+委托
 
@@ -222,23 +224,25 @@ pImpl，pointer to impletion，指针指向实现。也叫Handle/Body
 
 设计一个UI页面，可以开多个窗口观察同一份数据。
 
-观察者模式：一种一对多的关系，多个观察者监听某个主题。主题状态变化时通知观察者对象。
+观察者模式：**一种一对多的关系，多个观察者监听某个主题。主题状态变化时通知观察者对象更新。**
 
-![image-20250527210344842](./image/侯捷-OOP总结_image/image-20250527210344842.png)
+![image-20250603194437890](./image/OOP-上_image/image-20250603194437890.png)
 
 这个例子中，Subject保存数据，可以通过多个observe观察数据。
 
 核心在于，observer创建时attach到subject，subject赋值时更新observer
 
-![image-20250527210505488](./image/侯捷-OOP总结_image/image-20250527210505488.png)
+![image-20250603194449141](./image/OOP-上_image/image-20250603194449141.png)
 
 ##### Composite  组合模式
+
+将对象组合式树状结构，表示“部分-整体”的层次结构。**组合模式使得用户对单个对象和对组合对象的使用具有一致性，不关心自己处理的是叶节点还是组合组件。**
 
 如文件系统，目录中可以放文件，也可以放目录。
 
 如公司架构，树状结构![image-20250527211853576](./image/侯捷-OOP总结_image/image-20250527211853576.png)
 
-![image-20250527211917879](./image/侯捷-OOP总结_image/image-20250527211917879.png)
+![image-20250603194504725](./image/OOP-上_image/image-20250603194504725.png)
 
 ![image-20250527212019764](./image/侯捷-OOP总结_image/image-20250527212019764.png)
 
@@ -246,7 +250,7 @@ pImpl，pointer to impletion，指针指向实现。也叫Handle/Body
 
 使用场景：需要创建未来才会声明的类实例。
 
-通过这个模式，让未来的类设计时创建一份实例，注册到框架的父类，父类通过原型来创建这些子类实例。
+**通过这个模式，让未来的类设计时创建一份实例，注册到框架的父类，父类通过原型来创建这些子类实例。**
 
 步骤：
 
@@ -258,14 +262,14 @@ pImpl，pointer to impletion，指针指向实现。也叫Handle/Body
 
 在下面的代码中 Image类存放prototype
 
-LandSatImage类中，含有static的实例作为原型，且原型实例第一次创建时注册到Image类的_prototypes中，之后通过clone接口来创建其他实例。
+LandSatImage类中，含有static的类实例作为原型，且原型实例第一次创建时注册到Image类的_prototypes中，之后通过clone接口来创建其他实例。
 
 注意有两个构造函数，无参的在创建原型时只调用一次，含参的在clone时调用。
 
 ![image-20250527213753047](./image/侯捷-OOP总结_image/image-20250527213753047.png)
 
-![image-20250527213807965](./image/侯捷-OOP总结_image/image-20250527213807965.png)
+![image-20250603194608805](./image/OOP-上_image/image-20250603194608805.png)
 
 使用示例，static的原型实例会自动注册到_prototypes中，通过findAndClone调用原型类的clone接口
 
-![image-20250527214635969](./image/侯捷-OOP总结_image/image-20250527214635969.png)
+![image-20250603194619102](./image/OOP-上_image/image-20250603194619102.png)
