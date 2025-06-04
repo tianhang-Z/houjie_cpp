@@ -234,3 +234,13 @@ private:
 对比`XCls<string,list> mylist1`，其接受的第二参数list是个模板，需要根据传入的T推断类型。
 
 ![image-20250603204018465](./image/OOP-下_image/image-20250603204018465.png)
+
+### 关于STL
+
+容器 算法 迭代器 仿函数
+
+![image-20250604101639047](C:\Users\thz\AppData\Roaming\Typora\typora-user-images\image-20250604101639047.png)
+
+### 通过宏__cplusplus确认是否支持c11
+
+![image-20250604103546455](C:\Users\thz\AppData\Roaming\Typora\typora-user-images\image-20250604103546455.png)
