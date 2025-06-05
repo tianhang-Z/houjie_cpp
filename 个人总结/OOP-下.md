@@ -267,11 +267,170 @@ private:
 
 ### reference
 
-==对object和reference取地址 取sizeof结果相同==
+==对object和reference取地址 取sizeof结果相同==，**但这是一个假象，reference实际是指针**
 
 reference的指向不能变
+
+**reference通常不用于声明变量，而用于描述参数类型，返回类型**
 
 ![image-20250605113231205](.\image\OOP-下_image\\image-20250605113231205.png)
 
 ![image-20250605113413066](.\image\OOP-下_image\\image-20250605113413066.png)
 
+传引用比传指针更好，因为传引用和传value在参数调用端和接口调用端写法相同。
+
+传指针的话，传参是还需要取址&。
+
+![image-20250605142342342](./image/OOP-下_image/image-20250605142342342.png)
+
+函数的signature指的是函数名之后的部分，不包含返回值。
+
+函数最后的const也是签名的一部分，即const函数和非const函数是两个不同的函数。
+
+传引用和传value不能并存，因为函数的调用写法一致。
+
+### 复合、继承关系下的构造和析构
+
+构造由内而外
+
+析构由外而内
+
+![image-20250605143952693](./image/OOP-下_image/image-20250605143952693.png)
+
+![image-20250605144004354](./image/OOP-下_image/image-20250605144004354.png)
+
+![image-20250605144112632](./image/OOP-下_image/image-20250605144112632.png)
+
+### 关于vptr和vtbl
+
+注意B中重新实现了`vfunc1`，继承了`vfunc2`，因此B的虚表中有`B::vfunc2()和A::vfunc1()`
+
+类的成员函数只有一份代码，**子类继承的是父类成员函数的调用权**
+
+只要类有虚函数，就有虚表。
+
+下图中有一个指针p，如果p调用vfunc1时，编译器不会在编译期静态绑定函数地址，而是在运行期，通过vptr和vtbl调用函数。
+
+静态绑定时，调用代码会被编译成`call xxx`；动态绑定时，指针是父类指针，new一个子类对其赋值，这样向上转型（up-cast）是安全的，编译器调用代码编译成`(*(p->vptr)[n])(p)`。
+
+vptr是二级指针，通过`*(p->vptr)`获取虚表，访问虚表第n个。
+
+
+
+![image-20250605145628839](./image/OOP-下_image/image-20250605145628839.png)
+
+![image-20250605150155253](./image/OOP-下_image/image-20250605150155253.png)
+
+上面的例子中,C定义了和父类A的同名变量`m_data1`，子类会优先访问自己的`m_data1`，但可以通过`A::m_data1`访问A的`m_data1`
+
+ 
+
+### 关于this
+
+this指针是非静态成员函数隐含的第一个参数，指向的是类的实例。**类的非静态成员函数本质是通过this调用的。**
+
+下图是template method设计模式。
+
+如下图，在main中调用`OnFileOpen()`，传入this指针指向`CMyDoc`，其中调用`Serialize()`时，本质是通过`this->Serialize()`调用，`Serialize()`是虚函数，触发了多态，而this是一个父类指针，但指向的是子类对象，通过动态绑定，最终执行了子类的`Serialize()`
+
+![image-20250605153319527](./image/OOP-下_image/image-20250605153319527.png)
+
+|               **场景**               |          **成员函数调用成员函数的本质**          |
+| :----------------------------------: | :----------------------------------------------: |
+| **非静态成员函数调用非静态成员函数** |    通过 `this` 指针隐式调用（`this->func()`）    |
+|  **非静态成员函数调用静态成员函数**  |          直接调用（静态函数无 `this`）           |
+|  **静态成员函数调用非静态成员函数**  |    必须通过对象显式调用（不能直接 `this->`）     |
+|            **虚函数调用**            | 通过 `this` 指针查找虚函数表（vtable），实现多态 |
+
+* **静态成员函数没有 `this` 指针，不能直接调用非静态成员函数**。
+* 静态成员函数可以直接通过 **类名 + 作用域解析运算符 `::`** 调用，无需创建对象实例，不依赖this。
+
+- **非静态成员函数之间的调用本质是通过 `this` 指针隐式调用**。
+
+如果静态成员函数需要调用非静态成员函数，必须 **显式传递一个对象实例**，然后通过该对象调用非静态成员函数。
+
+```c++
+class MyClass {
+public:
+    void nonStaticFunc() { std::cout << "Non-static function" << std::endl; }
+    static void staticFunc(MyClass& obj) { // 接收对象引用
+        obj.nonStaticFunc(); // 通过对象调用非静态函数
+    }
+};
+```
+
+### dynamic binding
+
+从汇编角度理解。
+
+静态的函数调用被编译成了`call xxx`
+
+动态绑定的汇编代码明显更复杂
+
+![image-20250605155103961](./image/OOP-下_image/image-20250605155103961.png)
+
+![image-20250605155723257](./image/OOP-下_image/image-20250605155723257.png)
+
+### 关于const
+
+const函数，是对this指针进行const，表示不对对象进行修改。const对象调用非const函数时，对象的权限扩大，因为函数可以会修改对象，所以不合法。因此const对象只能调用const函数。
+
+![image-20250605160526713](./image/OOP-下_image/image-20250605160526713.png)
+
+下图说明，const对象只能调用const函数，非const对象可以调用const和非const函数。
+
+当两个函数同时存在时，非const对象只调用非const函数。const对象只调用const函数。
+
+![image-20250605160453997](./image/OOP-下_image/image-20250605160453997.png)
+
+ 
+
+上图右边的的opertor[]函数说明，返回值不属于函数签名（signature）的一部分。非const函数返回引用，可以对string修改。而const函数返回value，是一个临时值，不会修改原string。
+
+### 关于new delete
+
+new的过程：
+
+* ==为类的实例分配内存== 使用operator new
+* void*==转型==， 
+* pc指针调用构造函数   (==在string实现中，这一步才会给字符串分配内存==)
+
+![image-20250605162530668](./image/OOP-下_image/image-20250605162530668.png)
+
+#### 重载operator new 、operator new[]
+
+cpp实现了operator new和operator delete，
+
+下面作为学习探讨。
+
+1. 全局重载，是很危险的，影响很大。
+
+![image-20250605163627988](./image/OOP-下_image/image-20250605163627988.png)
+
+2. **成员函数重载，仅影响当前对象的new行为，不影响全局的其他类**
+
+   调用new时，**编译器会首先调用operator new，即调用类的operator new成员函数。**
+
+   delete同理。
+
+![image-20250605163721685](./image/OOP-下_image/image-20250605163721685.png)
+
+![image-20250605164001394](./image/OOP-下_image/image-20250605164001394.png)
+
+#### 示例
+
+使用::new可以绕过类重载的成员函数operator new，而去调用全局的。
+
+
+
+![image-20250605164458762](./image/OOP-下_image/image-20250605164458762.png)
+
+![image-20250605164757401](./image/OOP-下_image/image-20250605164757401.png)
+
+类有虚函数时，类的实例的内存空间头部是虚指针。因此，foo无虚函数时，大小为12，有虚函数时大小为16。
+
+上图右侧表示new Foo[5]的结果，64=12×5+4；12是单个foo的大小，额外的4字节是对foo的数量进行计数。同理，84=16×5+4，额外的4字节用于计数。构造时，自上而下调用五次构造函数。析构时自下而上调用五次析构函数。
+
+下图是调用::new的结果。打印的信息少了重载的函数中的cout信息。
+
+![image-20250605165736302](./image/OOP-下_image/image-20250605165736302.png)
