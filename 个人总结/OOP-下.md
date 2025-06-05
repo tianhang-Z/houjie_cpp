@@ -239,8 +239,39 @@ private:
 
 容器 算法 迭代器 仿函数
 
-![image-20250604101639047](C:\Users\thz\AppData\Roaming\Typora\typora-user-images\image-20250604101639047.png)
+![image-20250604101639047](.\image\OOP-下_image\\image-20250604101639047.png)
 
 ### 通过宏__cplusplus确认是否支持c11
 
-![image-20250604103546455](C:\Users\thz\AppData\Roaming\Typora\typora-user-images\image-20250604103546455.png)
+![image-20250604103546455](.\image\OOP-下_image\\image-20250604103546455.png)
+
+### c11的语法糖
+
+#### 可变参数模板 `typename... args`
+
+...就是一个pack，可以用递归的方式逐个处理
+
+可以使用sizeof操作符获取args数量
+
+![image-20250604103903319](.\image\OOP-下_image\\image-20250604103903319.png)
+
+ #### auto
+
+![image-20250605110644313](.\image\OOP-下_image\\image-20250605110644313.png)
+
+#### ranged-for
+
+![image-20250605110745465](.\image\OOP-下_image\\image-20250605110745465.png)
+
+  
+
+### reference
+
+==对object和reference取地址 取sizeof结果相同==
+
+reference的指向不能变
+
+![image-20250605113231205](.\image\OOP-下_image\\image-20250605113231205.png)
+
+![image-20250605113413066](.\image\OOP-下_image\\image-20250605113413066.png)
+
