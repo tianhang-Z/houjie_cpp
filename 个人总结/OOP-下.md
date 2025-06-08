@@ -247,7 +247,7 @@ private:
 
 ### c11的语法糖
 
-#### 可变参数模板 `typename... args`
+#### 可变参数模板 `typename... Types`
 
 ...就是一个pack，可以用递归的方式逐个处理
 
