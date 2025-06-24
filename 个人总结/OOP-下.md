@@ -139,7 +139,7 @@ unary_function指仿函数只有一个参数，binary_function是仿函数有两
 
 #### function template
 
-函数调用时，根据参数推断类型，不需要显式指定。
+**函数调用时，根据参数推断类型，不需要显式指定。**
 
 模板本身可以编译通过，再使用时，指定类型后会再编译一次，这一次可能编译失败，如下图中，stone如果没用重载`operator<`则会编译失败。
 
@@ -169,7 +169,46 @@ unary_function指仿函数只有一个参数，binary_function是仿函数有两
 
 模板就是泛化的一种，用的时候再指定类型。类型可以多种。
 
-特化就是指定类型后重新实现template。
+**特化就是指定类型后重新实现template。**
+
+特化有一些规则：（下面不全面，需要时自查即可）
+
+* 全特化是一个全新的实现，不会从原始模板继承任何成员函数
+
+- 如果特化版本中未定义某个成员函数，则该函数将不存在于特化版本中
+
+- 如果代码尝试调用未在特化中定义的成员函数，会导致编译错误
+
+  ```c++
+  template<typename T>
+  class MyClass {
+  public:
+      void func1() {}
+      void func2() {}
+  };
+  
+  // 全特化版本
+  template<>
+  class MyClass<int> {
+  public:
+      // 只重新实现了func1，没有实现func2
+      void func1() {}
+  };
+  
+  int main() {
+      MyClass<double> normal;  // 正常使用原始模板
+      normal.func1();          // OK
+      normal.func2();          // OK
+      
+      MyClass<int> specialized; // 使用全特化版本
+      specialized.func1();      // OK
+      specialized.func2();      // 编译错误！func2未在全特化中定义
+      
+      return 0;
+  }
+  ```
+
+  
 
 ![image-20250603201504684](./image/OOP-下_image/image-20250603201504684.png)
 
@@ -179,15 +218,15 @@ unary_function指仿函数只有一个参数，binary_function是仿函数有两
 
 即局部特化
 
-个数上的偏特化和范围上的偏特化。
+**个数上的偏特化和范围上的偏特化**。
 
 如STL为vector<bool>实现了偏特化，使用单个bit保存bool值。
+
+![image-20250603201930512](./image/OOP-下_image/image-20250603201930512.png)
 
 范围上的偏，如将任意类型T缩小为指针类型T*，为指针类型T实现一套代码。
 
 C<string*> 使用下面特化的代码。
-
-![image-20250603201930512](./image/OOP-下_image/image-20250603201930512.png)
 
 ![image-20250603201937548](./image/OOP-下_image/image-20250603201937548.png)
 
