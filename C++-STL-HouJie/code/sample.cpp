@@ -1927,12 +1927,13 @@ void test_containers() {
 //---------------------------------------------------
 #include <cstdlib>  //rand() and RAND_MAX
 int main(int argc, char** argv) {
+  cout << "__cplusplus: " << __cplusplus << endl;
   // jj00::test_misc();
 
   // jjxx::test_containers();
 
-  jj20::test_list_with_special_allocator();
-  // jj25::test_components_sizeof();
+  // jj20::test_list_with_special_allocator();
+  jj25::test_components_sizeof();
   // jj30::test_all_components();
   // jj31::test_Rb_tree();
   // jj32::test_Hashtable();

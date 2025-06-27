@@ -124,7 +124,11 @@ swap, micro-seconds : 1
 
 GNU是一个开源组织，其提供了gcc等编译器，gcc提供了STL
 
-/usr/include/c++/9，该路径下包含vector，list，mutex，memory等头文件。
+gcc还会在/usr/include/x86*_64-linux-gnu/*搜索头文件。
+
+`x86_64-linux-gnu` 表示 **64 位 x86 架构（AMD64/Intel 64）的 Linux 系统**，使用 GNU 工具链（如 GCC、glibc）。
+
+gcc-9的C++头文件位置一般在/usr/include/c++/9，该路径下包含vector，list，mutex，memory等头文件。
 
 **vector文件中包含#include <bits/stl_vector.h>，指向vector的实际实现。**
 
@@ -154,5 +158,89 @@ bits下包含stl_vector.h等 ，即vector的实现
 
 ![image-20250624220412272](./image/STL-standard template library_image/image-20250624220412272.png)
 
-### 分配器
+### 分配器allocator
+
+VC GNU-C是不同的编译器和工具链。前者是Microsoft的MSVC，后者是gcc/g++，他们有不同的标准库和STL的实现版本。
+
+查看源码 可以知道 std::allocator最终调用了operator new，从而调用malloc 
+
+下面是VC和GNU-C的不同实现的代码
+
+##### VC如下![image-20250626112755638](./image/STL-standard template library_image/image-20250626112755638.png)
+
+##### GNU-C2.9
+
+![image-20250626172053836](./image/STL-standard template library_image/image-20250626172053836.png)
+
+**GNU-C2.9中容器使用了alloc分配器**
+
+![image-20250626172322652](./image/STL-standard template library_image/image-20250626172322652.png)
+
+使用malloc分配的内存块，其头尾包含一些信息（比如块大小，块状态），malloc是动态内存分配器，底层需要管理空闲内存块，方法有：显示空闲链表、隐式空闲链表、分离链表等，这些方法的实现都用到了内存块头部信息。
+
+而**GNU-C2.9实现了基于malloc的内存池分配器alloc，其实现如下**：下图是16种不同大小的空闲链表，0号链表内存块为8字节，之后的链表按8字节等差递增。alloc使用molloc申请了连续了内存块，然后将这些连续的内存块分割成空闲链表。
+
+以vector为例，当其保存一百万个元素时，假设元素大小为56。使用下面的某个链表，为vector分配内存。于是vector的单个元素就没有头部信息了，而是一百万个元素共享malloc给出的大的内存块的头部信息。这个内存块分成了一百万份小内存块依次保存单个元素。好处是节约了内存，不需要为每个元素保存元素使用的小的内存块信息。
+
+![image-20250626165501701](./image/STL-standard template library_image/image-20250626165501701.png)
+
+##### GNU-C4.9
+
+![image-20250626171654823](./image/STL-standard template library_image/image-20250626171654823.png)
+
+**GNU-C4.9中alloc改名为pool_alloc**
+
+![image-20250626172433753](./image/STL-standard template library_image/image-20250626172433753.png)
+
+**GNU-C中容器使用的是stl::allocator 而不是pool_alloc**
+
+但可以手动指定分配器为pool_alloc
+
+![image-20250626172507668](./image/STL-standard template library_image/image-20250626172507668.png)
+
+### sizeof component
+
+```shell
+test_components_size().......... 
+sizeof(array<int,100>)= 400
+sizeof(vector<int>)= 24
+sizeof(list<int>)= 24
+sizeof(forward_list<int>)= 8
+sizeof(deque<int>)= 80
+sizeof(stack<int>)= 80
+sizeof(queue<int>)= 80
+sizeof(set<int>)= 48
+sizeof(map<int,int>)= 48
+sizeof(multiset<int>)= 48
+sizeof(multimap<int,int>)= 48
+sizeof(unordered_set<int>)= 56
+sizeof(unordered_map<int,int>)= 56
+sizeof(unordered_multiset<int>)= 56
+sizeof(unordered_multimap<int,int>)= 56
+sizeof(_Rb_tree<...>)= 48
+sizeof(array<int,100>::iterator)= 8
+sizeof(vector<int>::iterator)= 8
+sizeof(list<int>::iterator)= 8
+sizeof(forward_list<int>::iterator)= 8
+sizeof(deque<int>::iterator)= 32
+sizeof(set<int>::iterator)= 8
+sizeof(map<int,int>::iterator)= 8
+sizeof(multiset<int>::iterator)= 8
+sizeof(multimap<int,int>::iterator)= 8
+sizeof(unordered_set<int>::iterator)= 8
+sizeof(unordered_map<int,int>::iterator)= 8
+sizeof(unordered_multiset<int>::iterator)= 8
+sizeof(unordered_multimap<int,int>::iterator)= 8
+sizeof(_Rb_tree<...>::iterator)= 8
+sizeof(      std::allocator<string>)=1
+sizeof(__gnu_cxx::malloc_allocator<string>)= 1
+sizeof(__gnu_cxx::new_allocator<string>)= 1
+sizeof(__gnu_cxx::__pool_alloc<string>)= 1
+sizeof(__gnu_cxx::bitmap_allocator<string>)= 1
+sizeof(__gnu_cxx::__mt_alloc<string>)= 1
+sizeof(__gnu_cxx::array_allocator<int>)= 16
+sizeof(__gnu_cxx::debug_allocator<std::allocator<double>>)= 16
+```
+
+### 深度探索list
 
