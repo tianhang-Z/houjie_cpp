@@ -244,3 +244,86 @@ sizeof(__gnu_cxx::debug_allocator<std::allocator<double>>)= 16
 
 ### 深度探索list
 
+G2.9版本的list只保存了一个node指针
+
+#### 内部结构
+
+![image-20250627164445320](./image/STL-standard template library_image/image-20250627164445320.png)
+
+#### ⭐list_iterator
+
+iterator的实现和使用 ，**（pointer-like class），包含一个node指针** ，**需要重载解引用和箭头操作符，前置++和后置++。** 
+
+![image-20250627165328538](./image/STL-standard template library_image/image-20250627165328538.png)
+
+后置++ 返回的是一个右值（临时对象）
+
+下图中 `self temp=*this` 隐式转为 `self temp(*this)`，调用拷贝构造函数
+
+![image-20250627165427516](./image/STL-standard template library_image/image-20250627165427516.png)
+
+![image-20250627165211608](./image/STL-standard template library_image/image-20250627165211608.png)
+
+#### G4.9对G2.9的改进
+
+上述是G2.9，下面是G4.9；
+
+改进1：iterator的别名更简单，__list_iterator只有一个模板参数TP
+
+改进2：不再采用void*的类型的prev和next
+
+![image-20250627170850970](./image/STL-standard template library_image/image-20250627170850970.png)
+
+G4.9的实际实现更复杂，有一些继承和组成关系。
+
+![image-20250627172248103](./image/STL-standard template library_image/image-20250627172248103.png)
+
+#### 双向环状list，且包含一个空node
+
+**所有的容器都是前闭后开区间，这样end()返回一个不属于容器的位置。**
+
+![image-20250627171954532](./image/STL-standard template library_image/image-20250627171954532.png)
+
+### 迭代器的设计原则和iterator trait的设计    
+
+下图是一个rotate算法，箭头指示了算法的调用过程，其中`__iterator_category`萃取了iterator的类型（前进，后退，随机访问的，跳着走的等），`__rotate`还萃取了difference_type和value_type
+
+下图RAI指的是 `__iterator_category`返回的是`random_access_iterator_tag`
+
+iterator需要回答算法的这几个问题。
+
+![image-20250627213906876](./image/STL-standard template library_image/image-20250627213906876.png)
+
+#### ⭐ iterator相关的五种类型-便于回答算法的提问
+
+其中difference_type指的是两个迭代器的距离（即元素个数）。是有符号整数类型。
+
+bidirectional_iterator_tag指的是双向迭代器类型。
+
+![image-20250627215049455](./image/STL-standard template library_image/image-20250627215049455.png)
+
+由于iterator（迭代器）未必是个class，而可能是一个原生指针，因此需识别iterator是那种，并且回答相关的value_type等。
+
+于是产生了Traits，萃取机。用来分离class iterator个non-class iterator
+
+**![image-20250627220423068](./image/STL-standard template library_image/image-20250627220423068.png)**
+
+#### iterator_traits
+
+下面的2、3是特化的iterator_traits，当iterator是non class时，则会起作用。
+
+![image-20250627220542216](./image/STL-standard template library_image/image-20250627220542216.png)
+
+![image-20250627220820648](./image/STL-standard template library_image/image-20250627220820648.png)
+
+### traits有很多种
+
+![image-20250627221057447](./image/STL-standard template library_image/image-20250627221057447.png)
+
+### 深度探索vector
+
+vector是动态数组，维护三个迭代器变量，start，finish，end_of_storage。所以sizeof大小是8.
+
+
+
+![image-20250627222846609](./image/STL-standard template library_image/image-20250627222846609.png)
