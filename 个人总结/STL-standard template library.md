@@ -324,6 +324,14 @@ bidirectional_iterator_tag指的是双向迭代器类型。
 
 vector是动态数组，维护三个迭代器变量，start，finish，end_of_storage。所以sizeof大小是8.
 
-
-
 ![image-20250627222846609](./image/STL-standard template library_image/image-20250627222846609.png)
+
+#### 扩容
+
+![image-20250628182205422](./image/STL-standard template library_image/image-20250628182205422.png)
+
+![image-20250628182211416](./image/STL-standard template library_image/image-20250628182211416.png)
+
+#### vector iterator
+
+​	
