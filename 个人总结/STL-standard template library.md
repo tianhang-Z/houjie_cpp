@@ -540,7 +540,9 @@ const 防止修改key，且rb-tree把key进行排序。
 
   ![image-20250701112356468](./image/STL-standard template library_image/image-20250701112356468.png)
 
-##### stl提供的哈希函数
+##### STL提供的哈希函数
+
+* 下面是STL提供的仿函数
 
 * 基本类型int char 直接返回；字符串经过简单计算
 
@@ -698,6 +700,7 @@ unordered_set等提供了bucket_count()接口
 ![image-20250701171643689](./image/STL-standard template library_image/image-20250701171643689.png)
 
 * 仿函数的父类：规定操作数有几个
+* 同时**用于回答适配器的问题**
 
 ![image-20250701171754094](./image/STL-standard template library_image/image-20250701171754094.png)
 
@@ -717,9 +720,114 @@ unordered_set等提供了bucket_count()接口
 
 #### 仿函数适配器
 
+##### bind2nd
 
+以下图右上角为例，`less<int>()`是一个object，是实参。
+
+层层剥离，`bind2nd(less<int>(),40)`是一个函数返回一个`binder2nd<Operation>`对象。
+
+`binder2nd<Operation>`是一个模板类，接受op和arg2_type(x)作为参数，重载了operator()，这个类也是仿函数。
+
+这个类对`less<int>()`，即`Operation op`进行了适配。
+
+同时`less<int>`回答了适配器的问题，即下面的`Operation::second_argument_type value`
+
+![image-20250701173813347](./image/STL-standard template library_image/image-20250701173813347.png)
+
+##### not1
+
+和上面实现类似，not1返回一个函数对象的实例，即`unary_negate<Predict>`实例。
+
+`unary_negate<Predict>`接受pred作为参数，重载了operator()，实现取反
+
+
+
+![image-20250701175449272](./image/STL-standard template library_image/image-20250701175449272.png)
+
+##### bind (c11)
+
+bind可以绑定 函数 仿函数 成员函数 成员变量，返回一个函数对象实例。
+
+成员函数隐含this参数。
+
+![image-20250701175941763](./image/STL-standard template library_image/image-20250701175941763.png)
 
 #### 迭代器适配器
 
+##### reverse_iterator
+
+rbegin()和rend()是一个辅助函数，返回一个reverse_iterator实例
+
+reverser_iterator内部是一个正向迭代器  通过对正向迭代器操作实现接口
+
+![image-20250701193442919](./image/STL-standard template library_image/image-20250701193442919.png)
+
+##### inserter
+
+inserter是辅助函数，返回insert_iterator实例
+
+当copy时，如果目的位置有元素 ，使用inserter适配器可以不破坏目的位置的元素，而是插入。
+
+* 关键是重载operator=，其内部调用insert。
+
+![image-20250701193902709](./image/STL-standard template library_image/image-20250701193902709.png)
+
+##### ostream_iterator
+
+* 重载了operator=，其中调用了 `*out_stream<<value`
+
+![image-20250701210450983](./image/STL-standard template library_image/image-20250701210450983.png)
+
+##### istream_iterator
+
+重载了operator++，其中调用cin>>value，读取一个值到value
+
+创建iit时，读取了一个value
+
+通过解引用* ，获取value
+
+![image-20250701210709886](./image/STL-standard template library_image/image-20250701210709886.png)
 
 
+
+![image-20250702160723668](./image/STL-standard template library_image/image-20250702160723668.png)
+
+# 其余
+
+### ⭐万用哈希函数（仿函数）
+
+如何实现CustomerHash
+
+![image-20250702162040598](./image/STL-standard template library_image/image-20250702162040598.png)
+
+假设Custom中含有fname,lname,no三个成员变量
+
+左上角的例子能用，但是哈希冲突会比较严重。
+
+通过调用hash_val函数实现，其内部利用了可变模板参数。
+
+![image-20250702162249066](./image/STL-standard template library_image/image-20250702162249066.png)
+
+![image-20250702171659327](./image/STL-standard template library_image/image-20250702171659327.png)
+
+使用示例
+
+![image-20250702172451283](./image/STL-standard template library_image/image-20250702172451283.png)
+
+STL的unordered_set使用了默认的hash仿函数，我们可以在std中扩充默认hash函数。
+
+![image-20250702172718476](./image/STL-standard template library_image/image-20250702172718476.png)
+
+![image-20250702172728117](./image/STL-standard template library_image/image-20250702172728117.png)
+
+### type traits
+
+p43 p44 略
+
+### cout
+
+* 重载了多个版本的 operator<<
+
+![image-20250702180037544](./image/STL-standard template library_image/image-20250702180037544.png)
+
+![image-20250702201832925](./image/STL-standard template library_image/image-20250702201832925.png)
