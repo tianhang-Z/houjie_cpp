@@ -172,9 +172,11 @@ delete :
 
 #### composition , 组合 has-a
 
-**直接包含component，寿命是相同的，内存上是包含的，构造和析构时是同步的，寿命相同。**
+**直接包含component，寿命是相同的，内存上是包含的，构造和析构时是同步的，因此寿命相同。**
 
 component修改时，container也需要重新编译。
+
+
 
 ![image-20250603193717089](./image/OOP-上_image/image-20250603193717089.png)
 
@@ -189,6 +191,44 @@ component修改时，container也需要重新编译。
 下图中红色部分是编译器帮我们处理的，实际自己写代码时，并没有手动编写，而编译器会选择默认版本。
 
 ![image-20250603193735328](./image/OOP-上_image/image-20250603193735328.png)
+
+##### 构造顺序
+
+构造时，按照成员变量的声明顺序构造。
+
+```c++
+#include <iostream>
+
+class A {
+public:
+    A() { std::cout << "A constructed\n"; }
+};
+
+class B {
+public:
+    B() { std::cout << "B constructed\n"; }
+};
+
+class C {
+private:
+    A a;
+    B b;
+    
+public:
+    C() : b(), a() { // 注意：初始化列表顺序与声明顺序不同
+        std::cout << "C constructed\n";
+    }
+};
+
+int main() {
+    C obj;
+    return 0;
+}
+```
+
+初始化列表中 `b`在 `a`之前，但实际构造顺序仍遵循成员声明顺序（先 `a`后 `b`）。
+
+==成员对象可能相互依赖，按声明顺序构造可以确保依赖关系正确。==
 
 #### Delegation 委托 (composition by reference)
 
@@ -212,7 +252,7 @@ pImpl，pointer to impletion，指针指向实现。也叫Handle/Body
 
 ### 继承、多态和虚函数
 
-**一个良好的编程习惯是，父类的析构函数编写为virtual函数**
+==**一个良好的编程习惯是，父类的析构函数编写为virtual函数**==
 
 ![image-20250603193931558](./image/OOP-上_image/image-20250603193931558.png)
 
@@ -226,7 +266,7 @@ pImpl，pointer to impletion，指针指向实现。也叫Handle/Body
 
 **当我们要完成层次一致的一个过程或一系列步骤时，个别步骤在实现上可能不同，这时候可以考虑该模式。**
 
-成员函数的第一个参数是this，在下面这个例子中，调用`OnFileOpen`时传入`CMyDoc`指针，接着传给`Serialize()`，接着通过this指针调用`CMyDoc::Serialize()`
+成员函数的第一个参数是this，在下面这个例子中，调用`myDoc.OnFileOpen`时传入`CMyDoc`指针，接着运行到`Serialize()`，通过this指针调用`CMyDoc::Serialize()`
 
 ![image-20250603194115255](./image/OOP-上_image/image-20250603194115255.png)
 
