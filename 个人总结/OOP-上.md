@@ -27,7 +27,7 @@
 
 ####  类内定义的函数要短小 此时可作为内联函数候选（默认inline）
 
-对于类的成员函数，如果在类内部定义（即直接在类体中实现），则该函数默认为`inline`候选，无需显式添加`inline`关键字。
+对于类的成员函数，如果在**类内部定义（即直接在类体中实现），则该函数默认为`inline`候选**，无需显式添加`inline`关键字。
 
 但若在类外部定义成员函数，则需显式添加`inline`关键字。
 
@@ -43,17 +43,19 @@
 
 同样的函数名在编译后其实名称是不同的
 
+函数签名包括函数名，参数列表，const
+
 ![image-20250526171559144](./image/侯捷-OOP总结_image/image-20250526171559144.png)
 
 #### 单例模式：构造函数用private保护，使用static成员函数调用构造函数
 
 <img src="image\侯捷-OOP总结_image\image-20241228130716867.png" alt="image-20241228130716867" style="zoom:67%;" />
 
-#### const成员函数，const修饰this指针时，才能定义const类对象。否则会有权限扩大问题
+#### const成员函数，const修饰this指针；const类对象只能调用const成员函数。否则会有权限扩大问题
 
 <img src="image\侯捷-OOP总结_image\image-20241228140719261.png" alt="image-20241228140719261" style="zoom:67%;" />
 
-#### 传参尽量by ref ，思考是否用const和引用&，引用传递类时，相当于按指针传递
+#### 传参尽量by ref ，思考是否用const和引用&；引用传递类时，相当于按指针传递
 
 <img src="image\侯捷-OOP总结_image\image-20241229133029640.png" alt="image-20241229133029640" style="zoom:67%;" />
 
@@ -61,7 +63,21 @@
 
 返回值是本来就有的，可以return by ref。返回值需要临时创建，则需要return by  value
 
-`operator<<`重载
+`operator<<`  `operator+=`重载 return by ref
+
+```c++
+class Student {
+int age;
+string name;
+};
+
+ostream& operator<<(ostream& os, const Student stu){
+	os << "age:" << stu.age << " name:"<<stu.name;
+	return os;
+}
+```
+
+
 
 ![image-20250603193421968](./image/OOP-上_image/image-20250603193421968.png)
 
@@ -109,9 +125,11 @@ ostream不可以加const，因为要修改os
 
 ![image-20250603193544371](./image/OOP-上_image/image-20250603193544371.png)
 
- #### 带指针的类：  拷贝构造、拷贝赋值、析构
+ #### 带指针的类：  big three:  拷贝构造、拷贝赋值、析构
 
   申请内存、深拷贝、释放内存
+
+`operator=`  return by ref
 
 ![image-20250603193606099](./image/OOP-上_image/image-20250603193606099.png)
 
@@ -136,7 +154,7 @@ delete :
 
 ![image-20250603193642040](./image/OOP-上_image/image-20250603193642040.png)
 
-对string的指针进行delete，先析构函数释放字符串所占内存，之后释放对象所占的内存。
+对string的成员变量指针进行delete，先析构函数释放字符串所占内存，之后释放对象所占的内存。
 
 ![image-20250603193650845](./image/OOP-上_image/image-20250603193650845.png)
 
